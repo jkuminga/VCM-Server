@@ -1,0 +1,25 @@
+{
+  "name": "vcm_be",
+  "version": "1.0.0",
+  "description": "Node.js, Express Server For VCM Project",
+  "keywords": [
+    "vcm"
+  ],
+  "license": "ISC",
+  "author": "jkuminga",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js"
+  },
+  "dependencies": {
+    "connect-redis": "^9.0.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "mysql2": "^3.15.3",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "redis": "^5.9.0"
+  }
+}

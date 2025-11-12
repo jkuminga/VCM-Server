@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VCM Project</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #f4fff3;
+        background: radial-gradient(circle at 20% 20%, #d0f5c3, transparent 35%),
+          radial-gradient(circle at 80% 0%, #7bd08c, transparent 30%),
+          linear-gradient(145deg, #052a1e, #0f5132 50%, #06361f);
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        width: 100%;
+        padding: 24px 48px;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .auth-actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .auth-actions a,
+      .auth-actions button {
+        padding: 10px 20px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: 1px solid rgba(244, 255, 243, 0.4);
+        color: #052a1e;
+        background-color: rgba(244, 255, 243, 0.85);
+        transition: transform 0.2s ease, background-color 0.2s ease;
+      }
+
+      .auth-actions button {
+        border: none;
+        cursor: pointer;
+      }
+
+      .auth-actions a:last-child {
+        background-color: transparent;
+        color: #f4fff3;
+      }
+
+      .auth-actions a:hover,
+      .auth-actions button:hover {
+        transform: translateY(-1px);
+        background-color: rgba(244, 255, 243, 1);
+        color: #052a1e;
+      }
+
+      main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 24px 64px;
+      }
+
+      .hero {
+        max-width: 640px;
+        width: 100%;
+        text-align: center;
+        padding: 48px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 25px 90px rgba(0, 0, 0, 0.35);
+      }
+
+      .hero h1 {
+        margin: 0 0 16px;
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        letter-spacing: 0.12em;
+      }
+
+      .hero p {
+        margin: 0 auto 32px;
+        font-size: 0.95rem;
+        line-height: 1.7;
+        max-width: 420px;
+        color: rgba(244, 255, 243, 0.9);
+      }
+
+      .hero p span {
+        display: block;
+      }
+
+      .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 14px 36px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        background: linear-gradient(120deg, #d7ff8d, #7de08d);
+        color: #07301a;
+        box-shadow: 0 18px 40px rgba(125, 224, 141, 0.35);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .hero-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 50px rgba(125, 224, 141, 0.45);
+      }
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+
+      .modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal {
+        width: 100%;
+        max-width: 420px;
+        background: #0b301f;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 24px;
+        padding: 36px 32px;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+        position: relative;
+      }
+
+      .modal-title {
+        margin: 0 0 28px;
+        font-size: 1.75rem;
+        letter-spacing: 0.08em;
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .modal-title span {
+        font-size: 1rem;
+        opacity: 0.8;
+        letter-spacing: normal;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        background: transparent;
+        border: none;
+        color: rgba(244, 255, 243, 0.7);
+        font-size: 1.2rem;
+        cursor: pointer;
+      }
+
+      .google-btn {
+        width: 100%;
+        border: none;
+        border-radius: 999px;
+        padding: 14px 24px;
+        font-size: 1rem;
+        font-weight: 600;
+        background: #f6fff1;
+        color: #08301a;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        justify-content: center;
+      }
+
+      .google-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 26px rgba(246, 255, 241, 0.3);
+      }
+
+      @media (max-width: 600px) {
+        header {
+          padding: 20px;
+        }
+
+        .hero {
+          padding: 32px 20px;
+        }
+
+        .auth-actions {
+          width: 100%;
+          justify-content: flex-end;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="auth-actions">
+        <button type="button" id="open-login">로그인</button>
+        <a href="/register">회원가입</a>
+      </nav>
+    </header>
+    <main>
+      <section class="hero">
+        <h1>VCM PROJECT</h1>
+        <p>
+          <span>Exploring carbon-focused initiatives across every continent.</span>
+          <span>Discover the projects accelerating our global transition.</span>
+        </p>
+        <a class="hero-cta" href="/projects">Go to Dashboard</a>
+      </section>
+    </main>
+    <section class="modal-overlay" id="login-modal">
+      <div class="modal">
+        <button class="modal-close" id="close-login" aria-label="close">×</button>
+        <h2 class="modal-title">
+          Login
+          <span>with...</span>
+        </h2>
+        <a class="google-btn" href="/auth/google">start with google</a>
+      </div>
+    </section>
+    <script>
+      const modal = document.getElementById('login-modal');
+      const openBtn = document.getElementById('open-login');
+      const closeBtn = document.getElementById('close-login');
+
+      const toggleModal = (show) => {
+        if (show) {
+          modal.classList.add('active');
+          return;
+        }
+        modal.classList.remove('active');
+      };
+
+      openBtn.addEventListener('click', () => toggleModal(true));
+      closeBtn.addEventListener('click', () => toggleModal(false));
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+          toggleModal(false);
+        }
+      });
+    </script>
+  </body>
+</html>

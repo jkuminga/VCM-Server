@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>회원가입</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #4285f4, #34a853);
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .wrapper {
+        text-align: center;
+        background: rgba(0, 0, 0, 0.15);
+        padding: 48px 40px;
+        border-radius: 20px;
+        max-width: 480px;
+        width: calc(100% - 32px);
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(8px);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 2rem;
+        letter-spacing: -0.5px;
+      }
+
+      p {
+        margin: 0 0 32px;
+        line-height: 1.5;
+        font-size: 1rem;
+        opacity: 0.9;
+      }
+
+      form {
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      input[type='text'],
+      input[type='email'] {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: none;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.95);
+        color: #202124;
+        box-shadow: 0 4px 14px rgba(32, 33, 36, 0.15);
+      }
+
+      .roles {
+        display: flex;
+        gap: 12px;
+      }
+
+      .role-option {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.15);
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+      }
+
+      .role-option input {
+        width: 20px;
+        height: 20px;
+      }
+
+      .role-option:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+      }
+
+      button {
+        margin-top: 12px;
+        padding: 14px 20px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #202124;
+        background: #fff;
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(32, 33, 36, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(32, 33, 36, 0.28);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrapper">
+      <h1>추가 정보 입력</h1>
+      <p>프로필 정보를 확인하고 필요한 항목을 채운 뒤 회원가입을 완료하세요.</p>
+      <form action="/signup" method="post">
+        <label for="name">이름</label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          value="<%= user ? user.displayName : '' %>"
+          placeholder="홍길동"
+          required
+        />
+
+        <div>
+          <label>회원 유형</label>
+          <div class="roles">
+            <label class="role-option">
+              <input
+                class="role-checkbox"
+                type="checkbox"
+                name="role"
+                value="일반 사용자"
+                <%= user && user.role === 'user' ? 'checked' : '' %>
+              />
+              일반 사용자
+            </label>
+            <label class="role-option">
+              <input
+                class="role-checkbox"
+                type="checkbox"
+                name="role"
+                value="프로젝트 관리자"
+                <%= user && user.role === 'manager' ? 'checked' : '' %>
+              />
+              프로젝트 관리자
+            </label>
+          </div>
+        </div>
+
+        <label for="email">이메일</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          value="<%= user && user.emails && user.emails[0] ? user.emails[0].value : '' %>"
+          placeholder="you@example.com"
+          required
+        />
+
+        <label for="nickname">닉네임</label>
+        <input
+          id="nickname"
+          name="nickname"
+          type="text"
+          value="<%= user && user.nickname ? user.nickname : '' %>"
+          placeholder="닉네임을 입력하세요"
+          required
+        />
+
+        <input type="hidden" name="googleId" value="<%= user ? user.id : '' %>" />
+        <button type="submit">회원가입 완료</button>
+      </form>
+    </main>
+    <script>
+      // Only allow one checkbox at a time.
+      const boxes = document.querySelectorAll('.role-checkbox');
+      boxes.forEach((box) => {
+        box.addEventListener('change', () => {
+          if (box.checked) {
+            boxes.forEach((other) => {
+              if (other !== box) other.checked = false;
+            });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
