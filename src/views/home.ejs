@@ -73,13 +73,15 @@
       main {
         flex: 1;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
+        gap: 36px;
         padding: 48px 24px 64px;
       }
 
       .hero {
-        max-width: 640px;
+        max-width: 832px;
         width: 100%;
         text-align: center;
         padding: 48px;
@@ -205,6 +207,34 @@
         box-shadow: 0 12px 26px rgba(246, 255, 241, 0.3);
       }
 
+      .report-section {
+        width: 100%;
+        max-width: 832px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        text-align: left;
+      }
+
+      .report-section h2 {
+        margin: 0;
+        letter-spacing: 0.2em;
+        font-size: 1rem;
+      }
+
+      .report-section p {
+        margin: 0;
+        color: rgba(244, 255, 243, 0.85);
+      }
+
+      .report-container {
+        width: 100%;
+        min-height: 420px;
+        border: none;
+        border-radius: 32px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      }
+
       @media (max-width: 600px) {
         header {
           padding: 20px;
@@ -217,6 +247,10 @@
         .auth-actions {
           width: 100%;
           justify-content: flex-end;
+        }
+
+        .report-container {
+          min-height: 300px;
         }
       }
     </style>
@@ -242,6 +276,16 @@
           <span>Discover the projects accelerating our global transition.</span>
         </p>
         <a class="hero-cta" href="/projects/1">Go to Dashboard</a>
+      </section>
+      <section class="report-section">
+        <h2>VCM STATISTICS</h2>
+        <p>전세계 VCM 관련 통계를 이곳에서 한눈에 확인하세요.</p>
+        <iframe
+          class="report-container"
+          src="https://app.powerbi.com/view?r=eyJrIjoiMTQwMTBkZWEtOWVmZS00Y2I1LWE1OTktMDQ1MzFjMjU2MzVjIiwidCI6IjUzYTRjNzZkLWI2MjUtNGFhNi1hMTAzLWQ0M2MyYzIxYTMxMiIsImMiOjl9"
+          frameborder="0"
+          allowfullscreen="true"
+        ></iframe>
       </section>
     </main>
     <section class="modal-overlay" id="login-modal">
