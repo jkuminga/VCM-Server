@@ -18,9 +18,15 @@ app.use(sessionConfig);
 app.use(passport.initialize());
 app.use(passport.session());
 
+// bodyParser + public
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.use(express.static(path.join(__dirname, 'src/public')));
+
 // Setting Views
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
+
 
 // 메인 라우터 연결
 app.use('/', routes);

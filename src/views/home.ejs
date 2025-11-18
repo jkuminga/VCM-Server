@@ -38,7 +38,8 @@
       }
 
       .auth-actions a,
-      .auth-actions button {
+      .auth-actions button,
+      .auth-actions span {
         padding: 10px 20px;
         border-radius: 999px;
         text-decoration: none;
@@ -55,9 +56,11 @@
         cursor: pointer;
       }
 
-      .auth-actions a:last-child {
+      .auth-actions span {
         background-color: transparent;
         color: #f4fff3;
+        border-color: transparent;
+        cursor: default;
       }
 
       .auth-actions a:hover,
@@ -221,8 +224,14 @@
   <body>
     <header>
       <nav class="auth-actions">
+        <% if (typeof user !== 'undefined' && user) { %>
+        <span><%= user.email %></span>
+        <form action="/auth/logout" method="POST" style="margin: 0;">
+          <button type="submit" class="logout-btn">로그아웃</button>
+        </form>
+        <% } else { %>
         <button type="button" id="open-login">로그인</button>
-        <a href="/register">회원가입</a>
+        <% } %>
       </nav>
     </header>
     <main>
@@ -232,7 +241,7 @@
           <span>Exploring carbon-focused initiatives across every continent.</span>
           <span>Discover the projects accelerating our global transition.</span>
         </p>
-        <a class="hero-cta" href="/projects">Go to Dashboard</a>
+        <a class="hero-cta" href="/projects/1">Go to Dashboard</a>
       </section>
     </main>
     <section class="modal-overlay" id="login-modal">
@@ -258,7 +267,10 @@
         modal.classList.remove('active');
       };
 
-      openBtn.addEventListener('click', () => toggleModal(true));
+      if (openBtn) {
+        openBtn.addEventListener('click', () => toggleModal(true));
+      }
+
       closeBtn.addEventListener('click', () => toggleModal(false));
       modal.addEventListener('click', (event) => {
         if (event.target === modal) {

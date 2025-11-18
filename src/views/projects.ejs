@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VCM Projects</title>
+    <style>
+      :root {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #061b16;
+        background-color: #f7fbf9;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        background: #f4f9f4;
+        color: #061b16;
+      }
+
+      .sidebar {
+        width: 24%;
+        min-width: 240px;
+        padding: 32px 24px;
+        background: linear-gradient(180deg, #0f5132, #06361f);
+        color: #f4fff3;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .profile-card {
+        background: rgba(244, 255, 243, 0.08);
+        border-radius: 16px;
+        padding: 20px;
+      }
+
+      .user-info {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 0.95rem;
+      }
+
+      .user-info span {
+        font-size: 0.85rem;
+        opacity: 0.8;
+      }
+
+      .mypage-btn {
+        margin-top: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: rgba(244, 255, 243, 0.9);
+        color: #0f5132;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .sidebar h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        letter-spacing: 0.1em;
+      }
+
+      .sidebar nav a {
+        display: block;
+        padding: 10px 16px;
+        margin-bottom: 8px;
+        border-radius: 12px;
+        color: inherit;
+        text-decoration: none;
+        transition: background 0.2s ease;
+      }
+
+      .sidebar nav a:hover {
+        background: rgba(244, 255, 243, 0.15);
+      }
+
+      .content {
+        flex: 1;
+        padding: 32px 40px;
+      }
+
+      .search-bar {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+
+      .search-bar input,
+      .search-bar select {
+        padding: 12px 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(6, 27, 22, 0.15);
+        flex: 1;
+        font-size: 1rem;
+      }
+
+      .search-bar button {
+        padding: 12px 24px;
+        border-radius: 999px;
+        border: none;
+        background: #0f5132;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .projects-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+        margin-bottom: 32px;
+      }
+
+      .project-card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+        border: 1px solid rgba(6, 27, 22, 0.06);
+      }
+
+      .project-id {
+        font-size: 0.85rem;
+        letter-spacing: 0.1em;
+        color: #0f5132;
+        margin-bottom: 6px;
+      }
+
+      .project-registry {
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .project-total {
+        margin: 0;
+        font-size: 1.25rem;
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .pagination button {
+        border: none;
+        background: #fff;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .pagination .active {
+        background: #0f5132;
+        color: #fff;
+      }
+
+      @media (max-width: 860px) {
+        body {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .sidebar nav {
+          display: flex;
+          gap: 8px;
+        }
+
+        .content {
+          padding: 24px;
+        }
+
+        .search-bar {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="profile-card">
+        <h2>VCM</h2>
+        <p>Global Carbon Projects</p>
+        <% if (typeof user !== 'undefined' && user) { %>
+        <div class="user-info">
+          <strong><%= user.name || user.displayName || 'User' %></strong>
+          <span><%= user.email %></span>
+          <% if (user.role) { %>
+          <small>Role: <%= user.role %></small>
+          <% } %>
+          <a class="mypage-btn" href="/user/mypage">마이페이지</a>
+        </div>
+        <% } %>
+      </div>
+      <nav>
+        <a href="/projects/1">Projects</a>
+        <a href="/analytics">Analytics</a>
+        <a href="/insights">Insights</a>
+      </nav>
+    </aside>
+ 
+    <main class="content">
+      <form class="search-bar" action="/projects/search/1" method="POST">
+        <input type="text" name="keyword" placeholder="Search project ID or name" />
+        <select name="registry">
+          <option value="">All Registries</option>
+          <option value="ACR">ACR</option>
+          <option value="ART">ART</option>
+          <option value="CAR">CAR</option>
+          <option value="GS">GS</option>
+          <option value="VCS">VCS</option>
+        </select>
+        <button type="submit">Search</button>
+      </form>
+
+      <section class="projects-list">
+        <% if (Array.isArray(data) && data.length) { %>
+        <% data.forEach((project)=> { %>
+        <article class="project-card">
+          <div class="project-id"><%= project.project_id %></div>
+          <div class="project-registry"><%= project.registry %></div>
+          <p class="project-total">
+            Total Issued:
+            <strong><%= project.total_issued.toLocaleString('en-US') %></strong>
+          </p>
+        </article>
+        <% }) %>
+        <% } else { %>
+        <p>등록된 프로젝트 데이터가 없습니다.</p>
+        <% } %>
+      </section>
+
+      <div class="pagination">
+        <% if (pagination && pagination.total_pages) { %>
+        <% for (let page = 1; page <= pagination.total_pages; page++) { %>
+        <form action="/projects/<%= page %>" method="GET">
+          <button
+            type="submit"
+            class="<%= pagination.current_page === page ? 'active' : '' %>"
+          >
+            <%= page %>
+          </button>
+        </form>
+        <% } %>
+        <% } %>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,21 +1,8 @@
 import express from 'express';
 import pool from '../config/db.js';
+import usersController from '../controllers/users.controller.js';
 
 const router = express.Router();
-
-// TODO : 이 API 삭제하기
-router.get('/dashboard', (req, res)=>{
-    if(!req.user){
-        return res.redirect('/');
-    }
-
-    const displayName = req.user.displayName || req.user.name || req.user.email;
-
-
-    res.status(200).send(`Hello ${displayName}`)
-    // TODO : dashbaord 생성 및 랜더링
-})
-
 
 // 회원가입 화면 이동
 router.get('/signup', (req, res)=>{
@@ -42,7 +29,7 @@ router.post('/signup', async (req, res, next)=>{
     try{
         const pendingProfile = req.session.signupProfile;
         const newUser = {
-            id: pendingProfile.id,
+            google_id: pendingProfile.id,
             displayName: name,
             email,
             nickname,
@@ -53,9 +40,11 @@ router.post('/signup', async (req, res, next)=>{
             refreshToken: pendingProfile.refreshToken,
         };
 
-        await pool.query("INSERT INTO user (name, google_id, email, refresh_token, role) VALUES (?,?,?,?,?)", 
-            [newUser.displayName, newUser.id, newUser.email, newUser.refreshToken, newUser.role]
+        const [result] = await pool.query("INSERT INTO user (name, google_id, email, refresh_token, role) VALUES (?,?,?,?,?)", 
+            [newUser.displayName, newUser.google_id, newUser.email, newUser.refreshToken, newUser.role]
         );
+
+        newUser['id'] = result.insertId;
 
         delete req.session.signupProfile;
 
@@ -63,12 +52,22 @@ router.post('/signup', async (req, res, next)=>{
             if(err){
                 return next(err);
             }
-            res.redirect('/dashboard');
+            res.redirect('/');
         })
     }catch(error){
         next(error);
     }
 })
 
+
+// 마이페이지 화면 
+router.get('/mypage',(req,res)=>{
+    usersController.getUserInfo(req,res);  
+})
+
+// 사용자가 등록한 프로젝트 목록 받아오기
+router.get('/projects', (req, res)=>{
+    usersController.getUsersProjectsList(req, res);
+})
 
 export default router;

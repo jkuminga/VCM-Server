@@ -18,7 +18,7 @@ router.get('/google/callback' , (req, res, next)=>{
 
         if(!user){
             if(info && info.reason === 'signup'){
-                return res.redirect('/signup');
+                return res.redirect('/user/signup');
             }
             return res.redirect('/projects');
         }
@@ -30,6 +30,25 @@ router.get('/google/callback' , (req, res, next)=>{
             res.redirect('/projects/1');
         })
     })(req, res, next);
+})
+
+router.post('/logout', (req, res, next)=>{
+    req.logOut(err=>{
+        if(err){
+            console.log('❌[passport] 로그아웃 실패', err);
+            return next(err);
+        }
+
+        req.session.destroy(sessionErr=>{
+            if(sessionErr){
+                console.log('❌[session] 세션 삭제 중 오류 발생', err);
+                return next(err);
+            }
+        })
+        res.clearCookie('connect.sid');
+
+        return res.redirect('/');
+    })
 })
 
 export default router;
