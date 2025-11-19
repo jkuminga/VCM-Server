@@ -8,13 +8,8 @@ export default {
         }
     
         console.log('✅ 사용자 정보 불러오기 완료')
-        // res.status(200).json({
-            //     "code": 200,
-            //     "status": "success",
-            //     "message": "사용자 정보 불러오기 완료"
-        // })
-        console.log(req.user);
-        return res.status(200).render('mypage', {user:req.user});
+        res.status(200).json(req.user);
+        // return res.status(200).render('mypage', {user:req.user});
     },
 
     getUsersProjectsList : async (req, res)=>{
@@ -32,9 +27,16 @@ export default {
 
             console.log('✅ 사용자 프로젝트 불러오기 성공')
 
+            const response = {
+                user: req.user,
+                data : rows
+            }
+
+            console.log(response);
             
-            // res.status(200).json('done');
-            res.status(200).render('myprojects', {data : rows, user : req.user });
+            res.status(200).json(response);
+
+            // res.status(200).render('myprojects', {data : rows, user : req.user });
 
         }catch(error){
             console.error(`❌ 사용자 프로젝트 불러오기 실패`, err);

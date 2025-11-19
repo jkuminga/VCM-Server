@@ -26,8 +26,8 @@ router.get('/news', async (req, res)=>{
             url : doc.web_url,
             published_at : doc.pub_date
         })) ?? [];
-        // res.status(200).json({articles});
-        res.render('news', {articles, user:req.user});
+        res.status(200).json({articles});
+        // res.render('news', {articles, user:req.user});
     }catch(err){
         console.error('❌ 뉴스 데이터 호출 실패', err);
         res.status(500).json({message:'뉴스 데이터 호출 실패'});

@@ -27,16 +27,16 @@ export default {
                 };
             const data = results
                 
-            res.status(200).render('projects', {data, pagination, user: req.user})
-            // res.status(200).json({
-            //     "pagination": {
-            //         "current_page": pageNo,
-            //         "total_pages" : Math.ceil(count / LIMIT),
-            //         "total_items": count,
-            //         "limit": LIMIT
-            //     },
-            //     "data": results
-            // })
+            // res.status(200).render('projects', {data, pagination, user: req.user})
+            res.status(200).json({
+                "pagination": {
+                    "current_page": pageNo,
+                    "total_pages" : Math.ceil(count / LIMIT),
+                    "total_items": count,
+                    "limit": LIMIT
+                },
+                "data": results
+            })
         }catch(err){
             console.error(`❌ 프로젝트 ${pageNo} 페이지 목록 불러오기 실패`, err);
             res.status(500).json({
@@ -233,12 +233,12 @@ export default {
                 [newId, projectName, registry, scope, type, removalOrReduction, methodology, country, projectDeveloper, estimatedAnnualEmissionReductions,userId]);
 
             console.log('✅ 새로운 프로젝트 등록 완료');
-            res.status(200).render('project-success', {isEdit:true});
-            // res.status(200).json({
-            //     "code": 200,
-            //     "status": "success",
-            //     "message": "새로운 프로젝트 등록 완료"
-            // })
+            // res.status(200).render('project-success', {isEdit:true});
+            res.status(200).json({
+                "code": 200,
+                "status": "success",
+                "message": "새로운 프로젝트 등록 완료"
+            })
 
         }catch(err){
             console.error(`❌ 새로운 프로젝트 등록 실패`, err);
