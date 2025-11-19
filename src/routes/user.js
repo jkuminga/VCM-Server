@@ -62,7 +62,7 @@ router.post('/signup', async (req, res, next)=>{
 
 // 마이페이지 화면 
 router.get('/mypage',(req,res)=>{
-    usersController.getUserInfo(req,res);  
+    usersController.getUserInfo(req,res);
 })
 
 // 사용자가 등록한 프로젝트 목록 받아오기

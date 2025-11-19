@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VCM 뉴스</title>
+    <style>
+      :root {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #061b16;
+        background-color: #f7fbf9;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        background: #f4f9f4;
+        color: #061b16;
+      }
+
+      .sidebar {
+        width: 24%;
+        min-width: 240px;
+        padding: 32px 24px;
+        background: linear-gradient(180deg, #0f5132, #06361f);
+        color: #f4fff3;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .profile-card {
+        background: rgba(244, 255, 243, 0.08);
+        border-radius: 16px;
+        padding: 20px;
+      }
+
+      .user-info {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 0.95rem;
+      }
+
+      .user-info span {
+        font-size: 0.85rem;
+        opacity: 0.8;
+      }
+
+      .mypage-btn {
+        margin-top: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: rgba(244, 255, 243, 0.9);
+        color: #0f5132;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .sidebar h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        letter-spacing: 0.1em;
+      }
+
+      .sidebar nav a {
+        display: block;
+        padding: 10px 16px;
+        margin-bottom: 8px;
+        border-radius: 12px;
+        color: inherit;
+        text-decoration: none;
+        transition: background 0.2s ease;
+      }
+
+      .sidebar nav a:hover {
+        background: rgba(244, 255, 243, 0.15);
+      }
+
+      .content {
+        flex: 1;
+        padding: 32px 40px;
+      }
+
+      .news-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      .news-source {
+        margin: 4px 0 0;
+        color: rgba(6, 27, 22, 0.6);
+        font-weight: 600;
+      }
+
+      .nyt-logo {
+        height: 38px;
+        object-fit: contain;
+        filter: grayscale(100%);
+      }
+
+      .news-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+      }
+
+      .news-card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .news-card img {
+        width: 100%;
+        border-radius: 18px;
+        object-fit: cover;
+        height: 180px;
+      }
+
+      .news-meta {
+        font-size: 0.85rem;
+        color: rgba(6, 27, 22, 0.6);
+      }
+
+      .news-card h3 {
+        margin: 0;
+        font-size: 1.3rem;
+      }
+
+      .news-card p {
+        margin: 0;
+        color: rgba(6, 27, 22, 0.8);
+        line-height: 1.5;
+      }
+
+      .news-card a {
+        margin-top: auto;
+        align-self: flex-start;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: #0f5132;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      @media (max-width: 860px) {
+        body {
+          flex-direction: column;
+        }
+        .content {
+          padding: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="profile-card">
+        <h2>VCM</h2>
+        <p>Global Carbon Projects</p>
+        <% if (typeof user !== 'undefined' && user) { %>
+        <div class="user-info">
+          <strong><%= user.name || user.displayName || 'User' %></strong>
+          <span><%= user.email %></span>
+          <% if (user.role) { %>
+          <small>Role: <%= user.role %></small>
+          <% } %>
+          <a class="mypage-btn" href="/user/mypage">마이페이지</a>
+        </div>
+        <% } %>
+      </div>
+      <nav>
+        <a href="/projects/1">Projects</a>
+        <a href="/analytics">Analytics</a>
+        <a href="/news">News</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="news-header">
+        <div>
+          <h1>Latest VCM News</h1>
+          <p class="news-source">from The New York Times</p>
+        </div>
+        <img
+          class="nyt-logo"
+          src="https://upload.wikimedia.org/wikipedia/commons/7/77/The_New_York_Times_logo.png"
+          alt="The New York Times"
+        />
+      </header>
+      <section class="news-grid">
+        <% if (Array.isArray(articles) && articles.length) { %>
+        <% articles.forEach((article)=> { %>
+        <article class="news-card">
+          <% if (article.img) { %>
+          <img src="<%= article.img %>" alt="<%= article.headline %>" />
+          <% } %>
+          <div class="news-meta">
+            <%= article.published_at ? new Date(article.published_at).toLocaleDateString('ko-KR') : '' %>
+          </div>
+          <h3><%= article.headline %></h3>
+          <p><%= article.snippet %></p>
+          <a href="<%= article.url %>" target="_blank" rel="noopener noreferrer">자세히 보기</a>
+        </article>
+        <% }) %>
+        <% } else { %>
+        <p>표시할 뉴스가 없습니다.</p>
+        <% } %>
+      </section>
+    </main>
+  </body>
+</html>

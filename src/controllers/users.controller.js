@@ -13,6 +13,7 @@ export default {
             //     "status": "success",
             //     "message": "사용자 정보 불러오기 완료"
         // })
+        console.log(req.user);
         return res.status(200).render('mypage', {user:req.user});
     },
 
