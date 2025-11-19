@@ -6,12 +6,16 @@ import { fileURLToPath } from 'url';
 import './src/config/passport.js';
 import routes from './src/routes/index.js';
 import sessionConfig from './src/config/session.js';
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// CORS 설정
+app.use(cors({origin:'*', credentials : true}));
 
 // 세션 설정
 app.use(sessionConfig);
