@@ -4,7 +4,7 @@ import projectRoutes from './projects.js';
 import userRoutes from './user.js';
 import axios from'axios';
 import 'dotenv/config';
-import { errorWithTimestamp } from '../utils/logger.js';
+import { errorWithTimestamp, logWithTimestamp } from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -27,6 +27,8 @@ router.get('/news', async (req, res)=>{
             url : doc.web_url,
             published_at : doc.pub_date
         })) ?? [];
+
+        logWithTimestamp('✅ 뉴스 데이터 호출 성공');
         res.status(200).json({articles});
         // res.render('news', {articles, user:req.user});
     }catch(err){
