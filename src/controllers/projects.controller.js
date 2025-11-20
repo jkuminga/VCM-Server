@@ -1,4 +1,5 @@
 import pool from "../config/db.js";
+import { logWithTimestamp, errorWithTimestamp } from "../utils/logger.js";
 
 const LIMIT = 10;
 
@@ -16,7 +17,7 @@ export default {
 
             const [[{count}]] = await pool.query('SELECT COUNT(*) as count FROM projects');
 
-            console.log(`✅ 프로젝트 ${pageNo} 페이지 목록 불러오기 완료`)
+            logWithTimestamp(`✅ 프로젝트 ${pageNo} 페이지 목록 불러오기 완료`)
 
 
             const pagination = {
@@ -38,7 +39,7 @@ export default {
                 "data": results
             })
         }catch(err){
-            console.error(`❌ 프로젝트 ${pageNo} 페이지 목록 불러오기 실패`, err);
+            errorWithTimestamp(`❌ 프로젝트 ${pageNo} 페이지 목록 불러오기 실패`, err);
             res.status(500).json({
                 "code": 500,
                 "status": "Internal Server Error",
@@ -58,10 +59,10 @@ export default {
         try{
             const [[detail]] = await pool.query('SELECT id, project_id, project_name, registry, status, scope, type, removal_or_reduction, methodology, country, project_developer, verifier, vintage, estimated_annual_emission_reductions, registry_document FROM projects WHERE id = ?',[id]);
 
-            console.log(`✅ 프로젝트(${detail['project_id']}) 세부정보 불러오기 완료`);
+            logWithTimestamp(`✅ 프로젝트(${detail['project_id']}) 세부정보 불러오기 완료`);
             res.status(200).json(detail)
         }catch(err){
-            console.error(`❌ 프로젝트(${id}) 세부정보 불러오기 실패`, err);
+            errorWithTimestamp(`❌ 프로젝트(${id}) 세부정보 불러오기 실패`, err);
             res.status(500).json({
                 "code": 500,
                 "status": "Internal Server Error",
@@ -83,21 +84,21 @@ export default {
         try{
             const [[result]] = await pool.query('SELECT project_id, total_retired, total_issued, issued_2023,issued_2024,issued_2025, retired_2023,retired_2024, retired_2025 FROM projects WHERE id = ?', [id]);
 
-            console.log(result);
+            logWithTimestamp(result);
 
             const projectId = result['project_id'];
 
             const [rows] = await pool.query('SELECT * FROM ex_transactions WHERE project_id = ?', [projectId]);
 
-            console.log(rows);
+            logWithTimestamp(rows);
 
             result['total_transactions_count'] = rows.length;
             result['transactions'] = rows;
 
-            console.log(`✅ 프로젝트(${projectId}) 크래딧/트랜잭션 데이터 불러오기 완료`);
+            logWithTimestamp(`✅ 프로젝트(${projectId}) 크래딧/트랜잭션 데이터 불러오기 완료`);
             res.status(200).json(result);
         }catch(err){
-            console.error(`❌ 프로젝트 크래딧/트랜잭션 데이터 불러오기 실패`, err);
+            errorWithTimestamp(`❌ 프로젝트 크래딧/트랜잭션 데이터 불러오기 실패`, err);
             res.status(500).json({
                 "code": 500,
                 "status": "Internal Server Error",
@@ -147,8 +148,8 @@ export default {
         // 실제 WHERE문 생성
         const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
-        console.log(whereClause);
-        console.log(params);
+        logWithTimestamp(whereClause);
+        logWithTimestamp(params);
 
         try{
             const [rows] = await pool.query(`SELECT id, project_id, registry, total_issued FROM projects ${whereClause} LIMIT ${LIMIT} OFFSET ${offset}`,
@@ -156,7 +157,7 @@ export default {
 
             const [[{count}]] = await pool.query(`SELECT COUNT(*) AS count FROM projects ${whereClause}`, params);
 
-            console.log(count);
+            logWithTimestamp(count);
             res.status(200).json({
                 'option' : body,
                 'pagination' : {
@@ -168,7 +169,7 @@ export default {
                 'data' : rows
             });
         }catch(err){
-            console.error(`❌ 프로젝트 고급 검색 실패`, err);
+            errorWithTimestamp(`❌ 프로젝트 고급 검색 실패`, err);
             res.status(500).json({
                 "code": 500,
                 "status": "Internal Server Error",
@@ -183,7 +184,7 @@ export default {
         const userId = req.user.user_id;
 
         if(!userId){
-            console.log('🛑[401 Unauthorized]-로그인 된 사용자 없음');
+            logWithTimestamp('🛑[401 Unauthorized]-로그인 된 사용자 없음');
             res.status(401).render('401');
         }
 
@@ -213,7 +214,7 @@ export default {
             const [[row]] = await pool.query('select project_id as lastProjectId FROM projects WHERE registry = ? and project_id LIKE ? order by project_id DESC LIMIT 1;', 
                 [registry, keyword]);
             const lastProjectId = row?.lastProjectId ?? null;
-            console.log('🪪해당 레지스트리의 마지막 프로젝트 아이디: ', lastProjectId);
+            logWithTimestamp('🪪해당 레지스트리의 마지막 프로젝트 아이디: ', lastProjectId);
 
             if(!lastProjectId){
                 newId = `${registry}001N`;
@@ -225,14 +226,14 @@ export default {
                     const { prefix, num, suffix } = match.groups;
                     const next = String(Number(num) + 1).padStart(num.length, '0');
                     newId = `${prefix}${next}${suffix}`; // gs013
-                    console.log('🪪새 프로젝트 아이디 : ', newId);
+                    logWithTimestamp('🪪새 프로젝트 아이디 : ', newId);
                 }
             }
 
             const [_] = await pool.query('INSERT INTO projects (project_id, project_name, registry, scope, type, removal_or_reduction, methodology, country, project_developer, estimated_annual_emission_reductions, user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
                 [newId, projectName, registry, scope, type, removalOrReduction, methodology, country, projectDeveloper, estimatedAnnualEmissionReductions,userId]);
 
-            console.log('✅ 새로운 프로젝트 등록 완료');
+            logWithTimestamp('✅ 새로운 프로젝트 등록 완료');
             // res.status(200).render('project-success', {isEdit:true});
             res.status(200).json({
                 "code": 200,
@@ -241,7 +242,7 @@ export default {
             })
 
         }catch(err){
-            console.error(`❌ 새로운 프로젝트 등록 실패`, err);
+            errorWithTimestamp(`❌ 새로운 프로젝트 등록 실패`, err);
             res.status(500).json({
                 "code": 500,
                 "status": "Internal Server Error",

@@ -1,5 +1,6 @@
 import express from 'express';
 import passport from 'passport';
+import { errorWithTimestamp } from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.get('/google',
 router.get('/google/callback' , (req, res, next)=>{
     passport.authenticate('google', (err, user, info)=>{
         if(err){
-            console.error('❌인증 과정에서 오류 발생',err);
+            errorWithTimestamp('❌인증 과정에서 오류 발생', err);
             return next(err);
         }
 
@@ -35,13 +36,13 @@ router.get('/google/callback' , (req, res, next)=>{
 router.post('/logout', (req, res, next)=>{
     req.logOut(err=>{
         if(err){
-            console.log('❌[passport] 로그아웃 실패', err);
+            errorWithTimestamp('❌[passport] 로그아웃 실패', err);
             return next(err);
         }
 
         req.session.destroy(sessionErr=>{
             if(sessionErr){
-                console.log('❌[session] 세션 삭제 중 오류 발생', err);
+                errorWithTimestamp('❌[session] 세션 삭제 중 오류 발생', sessionErr);
                 return next(err);
             }
         })

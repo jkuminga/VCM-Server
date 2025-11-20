@@ -7,6 +7,7 @@ import './src/config/passport.js';
 import routes from './src/routes/index.js';
 import sessionConfig from './src/config/session.js';
 import cors from 'cors';
+import { logWithTimestamp, errorWithTimestamp } from './src/utils/logger.js';
 
 dotenv.config();
 
@@ -27,7 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, 'src/public')));
 
-// Setting Views
+// Setting Vie햐ws
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
@@ -37,12 +38,12 @@ app.use('/', routes);
 
 // 404 Handler : Not Found
 app.use((req, res) => {
-  console.error('❌404: NOT FOUND');
+  errorWithTimestamp('❌404: NOT FOUND');
   res.status(404).render('404');
 });
 
 // Listen
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Connected to port ${PORT}`);
+  logWithTimestamp(`Connected to port ${PORT}`);
 });
