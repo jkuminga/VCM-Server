@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import { errorWithTimestamp } from '../utils/logger.js';
+import { errorWithTimestamp, logWithTimestamp } from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -28,7 +28,8 @@ router.get('/google/callback' , (req, res, next)=>{
             if(loginErr){
                 return next(loginErr)
             }
-            res.redirect('/projects/1');
+            //TODO: 이부분 수정하기
+            res.redirect('http://localhost:3001/projects/1');
         })
     })(req, res, next);
 })
@@ -48,7 +49,9 @@ router.post('/logout', (req, res, next)=>{
         })
         res.clearCookie('connect.sid');
 
-        return res.redirect('/');
+        logWithTimestamp('✅로그아웃 완료')
+        //TODO: 이부분 수정하기
+        return res.status(200).json({ok : true});
     })
 })
 

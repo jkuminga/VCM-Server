@@ -3,7 +3,7 @@ import pool from '../config/db.js';
 
 
 for (let i = 0 ; i< 100 ; i++){
-    const registry = faker.helpers.arrayElement(['VCS', 'GS', 'ART', 'CAR', 'ACR']);
+    const registry = faker.helpers.arrayElement(['VCS', 'GLD', 'ART', 'CAR', 'ACR']);
     const project_id = `${registry}${i.toString().padStart(3, '0')}`
     const project_name = `${faker.location.city()} ${faker.helpers.arrayElement([
         'Forest Restoration',

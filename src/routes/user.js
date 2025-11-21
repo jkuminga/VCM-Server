@@ -1,6 +1,7 @@
 import express from 'express';
 import pool from '../config/db.js';
 import usersController from '../controllers/users.controller.js';
+import { errorWithTimestamp, logWithTimestamp } from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -59,6 +60,20 @@ router.post('/signup', async (req, res, next)=>{
     }
 })
 
+
+// 사용자 정보반환 라우터 
+router.get('/me', (req, res)=>{
+    if(!req.user) {
+        errorWithTimestamp('❌[401 UnAuthorized] 로그인 된 사용자 정보 반환 실패');
+        return res.status(401).json({
+            "code": 500,
+            "status": "Unauthorized",
+            "message": "Unauthorized",
+        })
+    }
+    logWithTimestamp('✅로그인 된 사용자 정보 반환 성공');
+    return res.status(200).json(req.user);
+})
 
 // 마이페이지 화면 
 router.get('/mypage',(req,res)=>{

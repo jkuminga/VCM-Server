@@ -148,7 +148,7 @@ export default {
         // 실제 WHERE문 생성
         const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
-        logWithTimestamp(whereClause);
+        // logWithTimestamp(whereClause);
         logWithTimestamp(params);
 
         try{
@@ -194,6 +194,7 @@ export default {
         const registry = body['registry_to_register'];
         const scope = body['scope'];
         const type = body['type'] ?? '';
+        const status = 'unknown';
         const removalOrReduction = body['removal_or_reduction'] ?? 'undefined';
         const methodology = body['methodology'] ?? '';
         const country = body['country'];
@@ -230,8 +231,8 @@ export default {
                 }
             }
 
-            const [_] = await pool.query('INSERT INTO projects (project_id, project_name, registry, scope, type, removal_or_reduction, methodology, country, project_developer, estimated_annual_emission_reductions, user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-                [newId, projectName, registry, scope, type, removalOrReduction, methodology, country, projectDeveloper, estimatedAnnualEmissionReductions,userId]);
+            const [_] = await pool.query('INSERT INTO projects (project_id, project_name, registry, status ,scope, type, removal_or_reduction, methodology, country, project_developer, estimated_annual_emission_reductions, user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+                [newId, projectName, registry, status, scope, type, removalOrReduction, methodology, country, projectDeveloper, estimatedAnnualEmissionReductions,userId]);
 
             logWithTimestamp('✅ 새로운 프로젝트 등록 완료');
             // res.status(200).render('project-success', {isEdit:true});
@@ -258,6 +259,7 @@ export default {
         // 1. body 받아와서 전처리
         // 2 DB-update
         // 3. 결과 랜더링
+
 
     },
 
