@@ -51,7 +51,8 @@ router.patch('/:id', (req, res)=>{
 
 // 프로젝트 삭제 하기
 router.delete('/:id', (req, res)=>{
-    // 폼 오류 시 에러 전송 생성
+    projectsController.deleteProject(req, res);
 })
+
+
 export default router;
-// 

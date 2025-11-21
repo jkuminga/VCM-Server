@@ -264,7 +264,27 @@ export default {
     },
 
     // 프로젝트 삭제 로직
-    deleteProject : (req, res)=>{
+    deleteProject : async(req, res)=>{
+        // 폼 오류 시 에러 전송 생성
+        const id = req.params.id;
 
+        try{
+            const result = await pool.query('DELETE FROM projects WHERE id = ?', [id]);
+
+            logWithTimestamp('✅프로젝트 삭제 완료');
+            res.status(200).json({
+                "code": 200,
+                "status": "success",
+                "message": "프로젝트 삭제 완료"
+            })
+        }catch(error){
+            errorWithTimestamp('❌프로젝트 삭제 실패', error);
+            res.status(500).json({
+                "code": 500,
+                "status": "Internal Server Error",
+                "message": "프로젝트 삭제 실패 ",
+                "error" : error
+            })
+        }
     },
 };
