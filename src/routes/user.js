@@ -11,73 +11,21 @@ router.get('/signup', (req, res)=>{
         return res.redirect('/')
     }
 
+    console.log(req.session.signupProfile)
+
     res.render('signup', {user : req.session.signupProfile});
 })
 
 
 // 회원가입 라우터
 router.post('/signup', async (req, res, next)=>{
-    if(!req.session.signupProfile){
-        return res.redirect('/')
-    }
-
-    const {name, email, nickname, role} = req.body;
-
-    if(!role) { 
-        return res.status(400).send('회원유형을 선택해주세요!');
-    }
-
-    try{
-        const pendingProfile = req.session.signupProfile;
-        const newUser = {
-            google_id: pendingProfile.id,
-            displayName: name,
-            email,
-            nickname,
-            role,
-            provider: pendingProfile.provider,
-            photo: pendingProfile.photos && pendingProfile.photos[0] ? pendingProfile.photos[0].value : null,
-            accessToken: pendingProfile.accessToken,
-            refreshToken: pendingProfile.refreshToken,
-        };
-
-        const [result] = await pool.query("INSERT INTO user (name, google_id, email, refresh_token, role) VALUES (?,?,?,?,?)", 
-            [newUser.displayName, newUser.google_id, newUser.email, newUser.refreshToken, newUser.role]
-        );
-
-        newUser['id'] = result.insertId;
-
-        delete req.session.signupProfile;
-
-        req.logIn(newUser, (err)=>{
-            if(err){
-                return next(err);
-            }
-            res.redirect('/');
-        })
-    }catch(error){
-        next(error);
-    }
+    usersController.signup(req, res, next);
 })
 
 
 // 사용자 정보반환 라우터 
 router.get('/me', (req, res)=>{
-    if(!req.user) {
-        errorWithTimestamp('❌[401 UnAuthorized] 로그인 된 사용자 정보 반환 실패');
-        return res.status(401).json({
-            "code": 500,
-            "status": "Unauthorized",
-            "message": "Unauthorized",
-        })
-    }
-    logWithTimestamp('✅로그인 된 사용자 정보 반환 성공');
-    return res.status(200).json(req.user);
-})
-
-// 마이페이지 화면 
-router.get('/mypage',(req,res)=>{
-    usersController.getUserInfo(req,res);
+    usersController.getUserInfo(req, res);
 })
 
 // 사용자가 등록한 프로젝트 목록 받아오기

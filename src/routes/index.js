@@ -9,6 +9,8 @@ import { errorWithTimestamp, logWithTimestamp } from '../utils/logger.js';
 const router = express.Router();
 
 // router.get('/', (req, res) => res.render('home', { user : req.user}));
+
+// 뉴스 기사 라우터
 router.get('/news', async (req, res)=>{
     try{
         const APIKEY = process.env.NEWS_APIKEY;

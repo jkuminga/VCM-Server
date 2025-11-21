@@ -46,20 +46,25 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
+        width: 100%;
+      }
+
+      form > * {
+        width: 100%;
       }
 
       label {
         font-weight: 600;
         font-size: 0.95rem;
-        margin-bottom: 8px;
-        display: block;
+        display: flex;
       }
 
       input[type='text'],
       input[type='email'] {
-        width: 100%;
+        width: 95%;
         padding: 12px 16px;
         border-radius: 12px;
+        margin-bottom: 15px;
         border: none;
         font-size: 1rem;
         background: rgba(255, 255, 255, 0.95);
@@ -70,6 +75,8 @@
       .roles {
         display: flex;
         gap: 12px;
+        width: 100%;
+        margin-top : 15px;
       }
 
       .role-option {
@@ -104,6 +111,7 @@
         border: none;
         border-radius: 999px;
         cursor: pointer;
+        width: 100%;
         box-shadow: 0 8px 20px rgba(32, 33, 36, 0.2);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
@@ -125,8 +133,17 @@
           name="name"
           type="text"
           value="<%= user ? user.displayName : '' %>"
-          placeholder="홍길동"
+          placeholder="이름을 입력하세요"
           required
+        />
+        <label for="email">이메일</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          value="<%= user && user.email ? user.email : '' %>"
+          required
+          disabled = <%= true %>
         />
         <div>
           <label>회원 유형</label>
@@ -137,6 +154,7 @@
                 type="checkbox"
                 name="role"
                 value="일반 사용자"
+                checked
                 <%= user && user.role === 'user' ? 'checked' : '' %>
               />
               일반 사용자
@@ -152,28 +170,7 @@
               프로젝트 관리자
             </label>
           </div>
-        </div>
-
-        <label for="email">이메일</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          value="<%= user && user.emails && user.emails[0] ? user.emails[0].value : '' %>"
-          placeholder="you@example.com"
-          required
-        />
-
-        <label for="nickname">닉네임</label>
-        <input
-          id="nickname"
-          name="nickname"
-          type="text"
-          value="<%= user && user.nickname ? user.nickname : '' %>"
-          placeholder="닉네임을 입력하세요"
-          required
-        />
-
+        </div>        
         <input type="hidden" name="googleId" value="<%= user ? user.id : '' %>" />
         <button type="submit">회원가입 완료</button>
       </form>

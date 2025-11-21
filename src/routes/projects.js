@@ -23,30 +23,14 @@ router.post('/search/:pageNo', (req,res)=>{
     projectsController.searchProject(req, res);
 })
 
-// 프로젝트 등록 화면
-// TODO : 프론트 연동 시 삭제
-router.get('/new/form', (req, res)=>{
-    if(!req.user){
-        console.log('Login Please');
-        return res.status(401).render('401');
-    }
-
-    return res.status(200).render('project-form', {isEdit : false})
-})
-
 // 프로젝트 등록 하기
 router.post('/new', (req, res)=>{
     projectsController.addNewProject(req, res);
 })
 
-router.get('/:id/edit',(req,res)=>{
-    // 1. 데이터 쿼리해서 ejs로 전송
-    // 2. ejs로 전송
-})
-
 // 프로젝트 수정 하기
 router.patch('/:id', (req, res)=>{
-    // 폼 오류 시 에러 전송 생성
+    projectsController.editProject(req,res);
 })
 
 // 프로젝트 삭제 하기

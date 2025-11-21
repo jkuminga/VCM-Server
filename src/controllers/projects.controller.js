@@ -255,12 +255,43 @@ export default {
     }, 
 
     // 프로젝트 수정 로직
-    editProject : (req, res)=>{
+    editProject : async(req, res)=>{
         // 1. body 받아와서 전처리
         // 2 DB-update
         // 3. 결과 랜더링
+        const id = req.params.id;
+        const body = req.body;
+
+        const projectName = body['project_name'];
+        const registry = body['registry'];
+        const scope = body['scope']
+        const type = body['type']
+        const removalOrReduction = body['removal_or_reduction']
+        const methodology = body['methodology']
+        const country = body['country']
+        const projectDeveloper = body['project_developer']
+        const estimatedAnnualEmissionReductions = body['estimated_annual_emission_reductions'];
 
 
+        try{
+            const [_] = await pool.query('UPDATE projects SET project_name = ?, registry = ?, scope = ?, type = ?, removal_or_reduction = ?, methodology = ?,  country = ?, project_developer =? , estimated_annual_emission_reductions=? WHERE id = ?',
+                [projectName, registry, scope, type, removalOrReduction, methodology, country, projectDeveloper, estimatedAnnualEmissionReductions,id]);
+
+            logWithTimestamp('✅ 프로젝트 수정 완료')
+            res.status(200).json({
+                "code": 200,
+                "status": "success",
+                "message": "프로젝트 수정 완료"
+            })
+        }catch(err){
+            errorWithTimestamp(`❌ 프로젝트 수정 실패`, err);
+            res.status(500).json({
+                "code": 500,
+                "status": "Internal Server Error",
+                "message": "새로운 프로젝트 등록 실패 ",
+                "error" : err
+            })
+        }
     },
 
     // 프로젝트 삭제 로직

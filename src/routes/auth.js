@@ -4,7 +4,7 @@ import { errorWithTimestamp, logWithTimestamp } from '../utils/logger.js';
 
 const router = express.Router();
 
-// 구글 로그인 화면
+// 구글 로그인
 router.get('/google', 
     passport.authenticate('google', {scope:['profile', 'email']}
 ));
@@ -34,6 +34,8 @@ router.get('/google/callback' , (req, res, next)=>{
     })(req, res, next);
 })
 
+
+// 로그아웃 기능
 router.post('/logout', (req, res, next)=>{
     req.logOut(err=>{
         if(err){
