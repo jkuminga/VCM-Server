@@ -47,7 +47,7 @@ export default {
         if(!req.user) {
             errorWithTimestamp('❌[401 UnAuthorized] 로그인 된 사용자 정보 반환 실패');
             return res.status(401).json({
-                "code": 500,
+                "code": 401,
                 "status": "Unauthorized",
                 "message": "Unauthorized",
             })

@@ -4,7 +4,6 @@ import { logWithTimestamp, errorWithTimestamp } from "../utils/logger.js";
 const LIMIT = 10;
 
 export default {
-    
     // 페이지에 해당하는 프로젝트 목록을 받아오는 로직
     getProjectListsByPageNo : async (req, res)=>{
         const rawPageNo = Number.parseInt(req.params.pageNo, 10);
