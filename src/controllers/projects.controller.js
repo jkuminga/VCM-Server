@@ -87,7 +87,9 @@ export default {
 
             const projectId = result['project_id'];
 
-            const [rows] = await pool.query('SELECT * FROM ex_transactions WHERE project_id = ?', [projectId]);
+            // const [rows] = await pool.query('SELECT * FROM ex_transactions WHERE project_id = ?', [projectId]);
+            const [rows] = await pool.query('SELECT * FROM credits WHERE project_id = ?', [projectId]);
+            
 
             logWithTimestamp(rows);
 
