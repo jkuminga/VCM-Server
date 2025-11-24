@@ -61,6 +61,9 @@ router.post('/waiting/:projectId/comment', (req, res)=>{
 router.post('/waiting/:projectId/reaction', (req, res)=>{
     projectsController.postReaction(req, res);
 })
+router.get('/waiting/:projectId/reaction', (req, res)=>{
+    projectsController.getReaction(req, res);
+})
 // 올린 프로젝트 수정하기
 router.patch('/waiting/:projectId', (req, res)=>{
     projectsController.editUserProjectDetail(req,res);

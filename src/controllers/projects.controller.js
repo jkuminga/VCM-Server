@@ -452,6 +452,106 @@ export default {
         }
     },
 
+    // 싱글 프로젝트에 달았던 리액션 보기
+    getReaction : async (req, res)=>{
+        // 1. 로그인 상태 확인하고 만약 로그인이 안되있으면 204
+        // 2. userId = req.user.user_id , pjid = req.params
+        // 3. select reaction from project
+        // 4. if no data -> 200 null
+        // 5. else -> reaction
+
+        if(!req.user){
+            logWithTimestamp('⚙️로그인 상태가 아닙니다.')
+            return res.status(200).json({
+                reaction : null
+            })
+        }
+
+        const userId = req.user.user_id;
+        const projectId = req.params.projectId;
+
+        try{
+            const [rows] = await pool.query('SELECT reaction FROM user_project_reactions WHERE user_id = ? AND project_id = ?', [userId, projectId]);
+            if(rows.length === 0 ){
+                logWithTimestamp('⚙️해당 프로젝트에 등록된 리액션 없음');
+                return res.status(200).json({
+                    reaction : null
+                })
+            }
+            const reaction = rows[0]['reaction'];
+
+            logWithTimestamp(`✅ 프로젝트 id ${projectId}의 리액션 가져오기 완료`);
+            return res.status(200).json({
+                reaction : reaction
+            })
+        }catch(err){
+            errorWithTimestamp(`❌ 프로젝트 id ${projectId}의 리액션 가져오기 실패`, err);
+            res.status(500).json({
+                "code": 500,
+                "status": "Internal Server Error",
+                "message": "프로젝트의 리액션 가져오기 완료",
+                "error" : err
+            })
+        }
+    },
+
+    // 싱글 프로젝트에 리엑션 달기
+    postReaction : async (req, res)=>{
+        const userId = req.user.user_id;
+        const projectId = req.params.projectId;
+        const data = req.body;
+        const reaction = data['reaction'];
+
+        // 로그인 상태가 아닌 경우
+        if(!req.user){
+            errorWithTimestamp('🛑[401 Unauthorized]-로그인 된 사용자 없음');
+            return res.status(401).json({
+                "code" : 401,
+                "status" : "Unauthorized",
+                "message" : "로그인 된 사용자가 없습니다."
+            })
+        }
+
+        // 전송한 Reaction !== like || !== dislike
+        if (!['like', 'dislike'].includes(reaction)) {
+            errorWithTimestamp
+            return res.status(400).json({ message: 'Invalid reaction' });
+        }
+
+        try{
+            const [rows] = await pool.query('SELECT reaction from user_project_reactions WHERE user_id = ?', [userId])
+
+            if(rows.length === 0){
+                await pool.query('INSERT INTO user_project_reactions (user_id, project_id, reaction) VALUES (?,?,?)', [userId, projectId, reaction])
+                logWithTimestamp(`✅ 새로운 리액션 등록 : {사용자 : ${userId}, 프로젝트ID : ${projectId}}`)
+                return res.status(200).json({result : 'done'})
+            }else{
+                const currentReaction = rows[0]['reaction'];
+                console.log(currentReaction);
+                if(currentReaction === reaction){
+                    await pool.query('DELETE FROM user_project_reactions WHERE user_id =? AND project_id = ?', [userId, projectId]);
+                    logWithTimestamp('✅ 기존의 리액션 삭제');
+                    return res.status(200).json({result : 'done'})
+                }else{
+                    await pool.query('UPDATE user_project_reactions SET reaction = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ? AND project_id = ?',
+                        [reaction, userId, projectId]
+                    )
+                    logWithTimestamp(`✅ 리액션 변경 : ${currentReaction} -> ${reaction}`);
+                    return res.status(200).json({result : 'done'})
+                }
+            }
+        }catch(err){
+            errorWithTimestamp(`❌ 새로운 리액션 달기 실패`, err);
+            res.status(500).json({
+                "code": 500,
+                "status": "Internal Server Error",
+                "message": "새로운 리액션 달기 성공",
+                "error" : err
+            })
+        }
+    },
+
+    // 새로운 코멘트 작성
     postComment : async(req, res)=>{
         try{
             
@@ -467,57 +567,8 @@ export default {
 
     },
 
-    postReaction : async (req, res)=>{
-        const userId = req.user.user_id;
-        const projectId = req.params.projectId;
-        const data = req.body;
-        const reaction = data['reaction'];
 
-        if(!req.user){
-            logWithTimestamp('🛑[401 Unauthorized]-로그인 된 사용자 없음');
-            return res.status(401).json({
-                "code" : 401,
-                "status" : "Unauthorized",
-                "message" : "로그인 된 사용자가 없습니다."
-            })
-        }
-
-        if (!['like', 'dislike'].includes(reaction)) {
-             return res.status(400).json({ message: 'Invalid reaction' });
-        }
-
-        try{
-            const [[currentReaction]] = await pool.query('SELECT reaction from user_project_reactions WHERE user_id = ?', [userId])
-
-            console.log(currentReaction);
-
-            // 1. 일단 없으면 업로드
-            // 2. 있으는데
-            
-
-            
-
-            const [_] = await pool.query('INSERT INTO user_project_reactions (project_id, user_id, reaction) VALUES (?,?,?)'
-                ,[projectId, userId, reaction]);
-
-            logWithTimestamp('✅새로운 리액션 남기기 완료');
-
-            res.status(200).json({
-                code : 200,
-                status : 'OK',
-                message : '새로운 리액션 달기 완료'
-            })
-        }catch(err){
-            errorWithTimestamp(`❌ 새로운 리액션 달기 실패`, err);
-            res.status(500).json({
-                "code": 500,
-                "status": "Internal Server Error",
-                "message": "새로운 리액션 달기 성공",
-                "error" : err
-            })
-        }
-    },
-
+    // 코멘트 목록 불러오기
     getComments : (req ,res)=>{
         try{
             
@@ -533,6 +584,7 @@ export default {
 
     },
 
+    // 싱글 코멘트 삭제하기
     deleteComments : (req, res)=>{
         try{
             

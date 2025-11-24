@@ -66,9 +66,7 @@ export default {
         const userId = user.user_id;
 
         try{
-            const [rows] = await pool.query('SELECT * FROM projects WHERE user_id = ?', [userId]);
-
-            console.log(rows);
+            const [rows] = await pool.query('SELECT * FROM user_projects WHERE user_id = ?', [userId]);
 
             logWithTimestamp('✅ 사용자 프로젝트 불러오기 성공')
 
@@ -76,8 +74,6 @@ export default {
                 user: req.user,
                 data : rows
             }
-
-            console.log(response);
             
             res.status(200).json(response);
         }catch(error){
