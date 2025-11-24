@@ -61,6 +61,7 @@ router.post('/waiting/:projectId/comment', (req, res)=>{
 router.post('/waiting/:projectId/reaction', (req, res)=>{
     projectsController.postReaction(req, res);
 })
+// 해당 프로젝트에 달린 현재 로그인 된 사용자의 공감 가져오기
 router.get('/waiting/:projectId/reaction', (req, res)=>{
     projectsController.getReaction(req, res);
 })
@@ -73,7 +74,7 @@ router.get('/waiting/detail/:projectId/comments', (req, res)=>{
     projectsController.getComments(req, res)
 })
 // 해당 프로젝트 댓글 삭제하기
-router.delete('/waiting/detail/:projectId/comment', (req, res)=>{
+router.delete('/waiting/detail/:commentId/comment', (req, res)=>{
     projectsController.deleteComments(req,res);
 })
 

@@ -293,10 +293,9 @@ export default {
         }
     },
 
-
-
-
+    // ========================================================================
     // 처리 대기중인 프로젝트 관련 API
+    // ========================================================================
     addNewUserProject :async(req ,res)=>{
         if(!req.user){
             logWithTimestamp('🛑[401 Unauthorized]-로그인 된 사용자 없음');
@@ -439,14 +438,61 @@ export default {
     },
 
     editUserProjectDetail :async (req, res)=>{
+        if(!req.user){
+            logWithTimestamp('🛑[401 Unauthorized]-로그인 된 사용자 없음');
+            return res.status(401).json({
+                code : 401,
+                status : 'Unauthorized'
+            })
+        }
+
+        const projectId = req.params.projectId;
+        const data = req.body;
+
+        const projectName = data['project_name'] //nn
+        const projectDeveloper = data['project_developer'];//nn
+        const registry = data['registry']; //nn
+        const scope = data['scope']; //nn
+        const type = data['type'];     
+        const country = data['country']; // nn
+        const description = data['description']; 
+        const methodology = data['methodology'];
+        const baselineSummary = data['baseline_summary'];
+        const monitoringPlan = data['monitoring_plan'];
+        const additionality = data['additionality'];
+        const removalOrReduction = data['removal_or_reduction'];
+
+        const requiredFields = [
+            projectName,
+            projectDeveloper,
+            registry,
+            scope,
+            country
+        ];
+
+        if(requiredFields.some((field) => !field || !String(field).trim())){
+            return res.status(400).json({
+                code: 400,
+                status: "Bad Request",
+                message: "필수 항목이 비어있습니다."
+            })
+        }
+
         try{
-            
+            await pool.query('UPDATE user_projects SET project_name = ?, registry = ?, scope=?, type=?, removal_or_reduction =?, methodology =?, country =?, developer_name =?, description =? ,baseline_summary=?, monitoring_plan =? , additionality=? WHERE id= ? ',
+                [projectName,registry, scope, type, removalOrReduction, methodology,country, projectDeveloper,description,baselineSummary, monitoringPlan,additionality,projectId]
+            )
+
+            logWithTimestamp('✅ 프로젝트 수정 완료')
+            res.status(200).json({
+                result : 'done'
+            })            
         }catch(err){
             errorWithTimestamp(`❌ 프로젝트 수정 실패`, err);
             res.status(500).json({
                 "code": 500,
                 "status": "Internal Server Error",
-                "message": "새로운 프로젝트 등록 실패 ",
+                "message": "프로젝트 수정 실패 ",
                 "error" : err
             })
         }
@@ -553,8 +599,36 @@ export default {
 
     // 새로운 코멘트 작성
     postComment : async(req, res)=>{
+        if(!req.user){
+            errorWithTimestamp('🛑[401 Unauthorized]-로그인 된 사용자 없음');
+            return res.status(401).json({
+                code : 401,
+                status : 'Unauthorized'
+            })
+        }
+
+        const data = req.body;
+        const userId = req.user.user_id;
+        const projectId = req.params.projectId;
+        console.log('prjectId', projectId);
+
+        if(data['content'] === ""){
+            errorWithTimestamp('❌ 입력된 내용이 없습니다.');
+            res.status(400).json({
+                code: 400,
+                status : "Bad Request"
+            })
+        }
+
         try{
-            
+            await pool.query('INSERT INTO user_project_comments (project_id, user_id, content) VALUES (?,?,?)', [projectId, userId, data['content']])
+
+            logWithTimestamp(`✅프로젝트 ${projectId}에 댓글 달기 완료`);
+            res.status(200).json({
+                code : 200,
+                status : 'OK',
+                message : `프로젝트 ${projectId}에 댓글 달기 완료`
+            })
         }catch(err){
             errorWithTimestamp(`❌ 프로젝트 수정 실패`, err);
             res.status(500).json({
@@ -564,14 +638,17 @@ export default {
                 "error" : err
             })
         }
-
     },
 
-
     // 코멘트 목록 불러오기
-    getComments : (req ,res)=>{
+    getComments : async (req ,res)=>{
+        const projectId = req.params.projectId;
+
         try{
-            
+            const [rows] = await pool.query('SELECT c.id, c.content, u.email FROM user_project_comments c JOIN user u ON c.user_id = u.user_id WHERE c.project_id = ?', [projectId]);
+
+            logWithTimestamp('✅ 프로젝트에 등록된 댓글 목록 불러오기 완료')
+            res.status(200).json(rows)
         }catch(err){
             errorWithTimestamp(`❌ 프로젝트 수정 실패`, err);
             res.status(500).json({
@@ -585,15 +662,21 @@ export default {
     },
 
     // 싱글 코멘트 삭제하기
-    deleteComments : (req, res)=>{
+    deleteComments : async (req, res)=>{
+        const commentId = req.params.commentId;
         try{
-            
+            await pool.query('DELETE FROM user_project_comments WHERE id = ?', [commentId]);
+
+            logWithTimestamp('✅ 댓글 삭제 완료')
+            res.status(200).json({
+                result : 'done',
+            })
         }catch(err){
-            errorWithTimestamp(`❌ 프로젝트 수정 실패`, err);
+            errorWithTimestamp(`❌ 댓글 삭제 실패`, err);
             res.status(500).json({
                 "code": 500,
                 "status": "Internal Server Error",
-                "message": "새로운 프로젝트 등록 실패 ",
+                "message": "댓글 삭제 실패",
                 "error" : err
             })
         }
