@@ -2,6 +2,7 @@ import express from 'express';
 import authRoutes from './auth.js';
 import projectRoutes from './projects.js';
 import userRoutes from './user.js';
+import manageRoutes from './manage.js'
 import axios from'axios';
 import 'dotenv/config';
 import { errorWithTimestamp, logWithTimestamp } from '../utils/logger.js';
@@ -42,5 +43,7 @@ router.get('/news', async (req, res)=>{
 router.use('/auth', authRoutes);
 router.use('/projects', projectRoutes);
 router.use('/user', userRoutes);
+
+router.use('/manage', manageRoutes)
 
 export default router;

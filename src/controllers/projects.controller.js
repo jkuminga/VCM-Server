@@ -368,12 +368,14 @@ export default {
         const pageNo = Number.isNaN(rawPageNo) || rawPageNo < 1 ? 1 : rawPageNo;
         const offset = (pageNo - 1)* LIMIT;
 
+        const APPROVED = 'approved';
+
         const projectId = req.params.projectId;
         
         try{
-            const [results] = await pool.query("SELECT u.id, u.project_name, u.country, u.scope, COALESCE(SUM(CASE WHEN r.reaction = 'like' THEN 1 ELSE 0 END), 0) AS like_count, COALESCE(SUM(CASE WHEN r.reaction = 'dislike' THEN 1 ELSE 0 END), 0) AS dislike_count FROM user_projects AS u LEFT JOIN user_project_reactions AS r ON u.id = r.project_id GROUP BY u.id, u.project_name, u.country, u.scope ORDER BY u.id DESC LIMIT ? OFFSET ?", [LIMIT, offset]);
+            const [results] = await pool.query("SELECT u.id, u.project_name, u.country, u.scope, COALESCE(SUM(CASE WHEN r.reaction = 'like' THEN 1 ELSE 0 END), 0) AS like_count, COALESCE(SUM(CASE WHEN r.reaction = 'dislike' THEN 1 ELSE 0 END), 0) AS dislike_count FROM user_projects AS u LEFT JOIN user_project_reactions AS r ON u.id = r.project_id WHERE u.status = ? GROUP BY u.id, u.project_name, u.country, u.scope ORDER BY u.id DESC LIMIT ? OFFSET ?", [APPROVED,LIMIT, offset]);
 
-            const [[{count}]] = await pool.query('SELECT COUNT(*) as count FROM user_projects');
+            const [[{count}]] = await pool.query('SELECT COUNT(*) as count FROM user_projects WHERE status = ?', [APPROVED]);
 
             logWithTimestamp(`✅ 대기중인 프로젝트 ${pageNo} 페이지 목록 불러오기 완료`)
  
@@ -560,7 +562,7 @@ export default {
 
         // 전송한 Reaction !== like || !== dislike
         if (!['like', 'dislike'].includes(reaction)) {
-            errorWithTimestamp
+            errorWithTimestamp('❌ 잘못된 리액션 전송');
             return res.status(400).json({ message: 'Invalid reaction' });
         }
 
@@ -630,11 +632,11 @@ export default {
                 message : `프로젝트 ${projectId}에 댓글 달기 완료`
             })
         }catch(err){
-            errorWithTimestamp(`❌ 프로젝트 수정 실패`, err);
+            errorWithTimestamp(`❌ 프로젝트에 댓글 달기 실패`, err);
             res.status(500).json({
                 "code": 500,
                 "status": "Internal Server Error",
-                "message": "새로운 프로젝트 등록 실패 ",
+                "message": "프로젝트에 댓글 달기 실패 ",
                 "error" : err
             })
         }
@@ -650,11 +652,11 @@ export default {
             logWithTimestamp('✅ 프로젝트에 등록된 댓글 목록 불러오기 완료')
             res.status(200).json(rows)
         }catch(err){
-            errorWithTimestamp(`❌ 프로젝트 수정 실패`, err);
+            errorWithTimestamp(`❌ 프로젝트에 등록된 댓글 목록 불러오기 실패`, err);
             res.status(500).json({
                 "code": 500,
                 "status": "Internal Server Error",
-                "message": "새로운 프로젝트 등록 실패 ",
+                "message": "프로젝트에 등록된 댓글 목록 불러오기 실패 ",
                 "error" : err
             })
         }

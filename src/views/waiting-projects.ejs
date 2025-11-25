@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>대기중인 프로젝트 목록</title>
+    <style>
+      :root {
+        --bg: #f5f8f5;
+        --panel: #ffffff;
+        --text: #082019;
+        --muted: #5c7069;
+        --accent: #0f5132;
+        --accent-2: #2f855a;
+        --border: rgba(8, 32, 25, 0.08);
+        --shadow: 0 16px 50px rgba(0, 0, 0, 0.08);
+        font-family: 'Segoe UI', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(circle at 20% 20%, rgba(15, 81, 50, 0.12), transparent 35%),
+          radial-gradient(circle at 80% 0%, rgba(47, 133, 90, 0.12), transparent 25%),
+          var(--bg);
+      }
+
+      header {
+        padding: 28px 32px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .title-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px 16px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.6rem;
+        letter-spacing: -0.01em;
+      }
+
+      .sub {
+        color: var(--muted);
+        margin: 0;
+        font-size: 0.95rem;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .select {
+        position: relative;
+        min-width: 180px;
+      }
+
+      select {
+        width: 100%;
+        padding: 12px 42px 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        font-size: 0.98rem;
+        color: var(--text);
+        appearance: none;
+        box-shadow: var(--shadow);
+      }
+
+      .select::after {
+        content: '▾';
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--muted);
+        pointer-events: none;
+      }
+
+      button.primary {
+        padding: 12px 18px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(120deg, var(--accent), var(--accent-2));
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+      }
+
+      main {
+        padding: 0 32px 40px;
+      }
+
+      .projects {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 12px;
+      }
+
+      .card {
+        background: var(--panel);
+        border-radius: 16px;
+        padding: 18px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .project-name {
+        margin: 0;
+        font-size: 1.1rem;
+        line-height: 1.3;
+      }
+
+      .status {
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border: 3px solid #d9e3de;
+        background: transparent;
+        color: var(--muted);
+      }
+
+      .status.pending {
+        border-color: #f1c40f;
+        color: #b48900;
+      }
+
+      .status.approved {
+        border-color: #2f855a;
+        color: #1f5d3e;
+      }
+
+      .status.rejected {
+        border-color: #c4c8c6;
+        color: #6b7471;
+      }
+
+      .meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 6px 12px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .meta strong {
+        color: var(--text);
+        display: block;
+        font-size: 0.97rem;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .detail-btn {
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #0f5132;
+        color: #fff;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+        box-shadow: 0 8px 20px rgba(15, 81, 50, 0.25);
+      }
+
+      .detail-btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .empty {
+        background: var(--panel);
+        border: 1px dashed var(--border);
+        border-radius: 16px;
+        padding: 32px;
+        text-align: center;
+        color: var(--muted);
+        box-shadow: var(--shadow);
+      }
+
+      @media (max-width: 960px) {
+        .projects {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        header {
+          padding: 20px 18px 8px;
+        }
+
+        main {
+          padding: 0 18px 28px;
+        }
+
+        .projects {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="title-row">
+        <h1>대기중인 프로젝트</h1>
+        <p class="sub">선택한 레지스트리의 등록 요청 프로젝트를 확인하세요.</p>
+      </div>
+      <div class="controls">
+        <div class="select">
+          <select id="registry-select">
+            <% if (Array.isArray(registries)) { %>
+              <% registries.forEach((item)=> { %>
+                <option value="<%= item %>" <%= registry === item ? 'selected' : '' %>><%= item %></option>
+              <% }) %>
+            <% } %>
+          </select>
+        </div>
+        <button class="primary" id="load-btn" type="button">목록 불러오기</button>
+      </div>
+    </header>
+
+    <main>
+      <% if (Array.isArray(projects) && projects.length) { %>
+        <section class="projects">
+          <% projects.forEach((project)=> { %>
+            <% const statusClass = (project.status || '').toLowerCase(); %>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="project-name"><%= project.project_name || '이름 없음' %></h2>
+                <span class="status <%= statusClass %>"><%= project.status || 'PENDING' %></span>
+              </div>
+              <div class="meta">
+                <div>
+                  <span>프로젝트 ID</span>
+                  <strong><%= project.id %></strong>
+                </div>
+                <!-- <div>
+                  <span>코드</span>
+                  <strong><%= project.project_code || '-' %></strong>
+                </div> -->
+                <div>
+                  <span>최종 업데이트</span>
+                  <strong><%= project.updated_at ? new Date(project.updated_at).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) : '-' %></strong>
+                </div>
+              </div>
+              <div class="actions">
+                <a class="detail-btn" href="/manage/detail/<%= project.id %>">세부 정보</a>
+              </div>
+            </article>
+          <% }) %>
+        </section>
+      <% } else { %>
+        <div class="empty">선택한 레지스트리에 대기중인 프로젝트가 없습니다.</div>
+      <% } %>
+    </main>
+
+    <script>
+      const registrySelect = document.getElementById('registry-select');
+      const loadBtn = document.getElementById('load-btn');
+
+      function goToRegistry() {
+        const value = registrySelect?.value;
+        if (value) {
+          window.location.href = `/manage/list/${encodeURIComponent(value)}`;
+        }
+      }
+
+      loadBtn?.addEventListener('click', goToRegistry);
+      registrySelect?.addEventListener('change', goToRegistry);
+    </script>
+  </body>
+</html>

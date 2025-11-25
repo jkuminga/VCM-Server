@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>프로젝트 상세</title>
+    <style>
+      :root {
+        --bg: #f5f8f5;
+        --panel: #ffffff;
+        --text: #082019;
+        --muted: #5c7069;
+        --accent: #0f5132;
+        --accent-2: #2f855a;
+        --border: rgba(8, 32, 25, 0.08);
+        --shadow: 0 16px 50px rgba(0, 0, 0, 0.08);
+        font-family: 'Segoe UI', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(circle at 20% 20%, rgba(15, 81, 50, 0.12), transparent 35%),
+          radial-gradient(circle at 80% 0%, rgba(47, 133, 90, 0.12), transparent 25%),
+          var(--bg);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      header {
+        padding: 28px 32px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .title-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px 16px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.6rem;
+        letter-spacing: -0.01em;
+      }
+
+      .sub {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      main {
+        padding: 0 32px 36px;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        padding: 18px 20px;
+      }
+
+      .section-title {
+        margin: 0 0 12px;
+        font-size: 1.05rem;
+      }
+
+      .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px 14px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .field strong {
+        color: var(--text);
+        font-size: 1rem;
+      }
+
+      .text-block {
+        line-height: 1.5;
+        white-space: pre-wrap;
+        color: var(--text);
+      }
+
+      .status {
+        padding: 8px 12px;
+        border-radius: 12px;
+        font-size: 0.86rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border: 1.5px solid #d9e3de;
+        background: transparent;
+        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .status.waiting {
+        border-color: #f1c40f;
+        color: #b48900;
+      }
+
+      .status.approved {
+        border-color: #2f855a;
+        color: #1f5d3e;
+      }
+
+      .status.rejected {
+        border-color: #c4c8c6;
+        color: #6b7471;
+      }
+
+      .status-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+
+      .status-form select {
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        font-size: 0.95rem;
+        min-width: 160px;
+      }
+
+      .status-form button {
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(120deg, var(--accent), var(--accent-2));
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(15, 81, 50, 0.25);
+      }
+
+      .helper {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-top: 6px;
+      }
+
+      @media (max-width: 960px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        header {
+          padding: 20px 18px 10px;
+        }
+
+        main {
+          padding: 0 18px 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="title-row">
+        <h1><%= project.project_name %></h1>
+        <span class="status <%= project.status %>"><%= project.status %></span>
+      </div>
+      <p class="sub">레지스트리: <strong><%= project.registry %></strong> • 코드: <strong><%= project.public_code %></strong></p>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h2 class="section-title">요약 정보</h2>
+        <div class="meta-grid">
+          <div class="field">
+            <span>개발자</span>
+            <strong><%= project.developer_name || '-' %></strong>
+          </div>
+          <div class="field">
+            <span>Scope</span>
+            <strong><%= project.scope || '-' %></strong>
+          </div>
+          <div class="field">
+            <span>Type</span>
+            <strong><%= project.type || '-' %></strong>
+          </div>
+          <div class="field">
+            <span>Country</span>
+            <strong><%= project.country || '-' %></strong>
+          </div>
+          <div class="field">
+            <span>생성 일시</span>
+            <strong><%= project.created_at ? new Date(project.created_at).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) : '-' %></strong>
+          </div>
+          <div class="field">
+            <span>업데이트</span>
+            <strong><%= project.updated_at ? new Date(project.updated_at).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) : '-' %></strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2 class="section-title">상태 변경</h2>
+        <p class="helper">상태를 선택해 저장하면 즉시 업데이트됩니다.</p>
+        <div class="status-form">
+          <select id="status-select">
+            <% statuses.forEach((s)=> { %>
+              <option value="<%= s %>" <%= project.status === s ? 'selected' : '' %>><%= s %></option>
+            <% }) %>
+          </select>
+          <button id="status-save" type="button">상태 저장</button>
+        </div>
+        <p id="status-result" class="helper"></p>
+      </section>
+
+      <section class="panel" style="grid-column: 1 / -1;">
+        <h2 class="section-title">프로젝트 설명</h2>
+        <div class="text-block"><%= project.description || '설명이 없습니다.' %></div>
+      </section>
+
+      <section class="panel">
+        <h2 class="section-title">Methodology</h2>
+        <div class="text-block"><%= project.methodology || '-' %></div>
+      </section>
+
+      <section class="panel">
+        <h2 class="section-title">Baseline Summary</h2>
+        <div class="text-block"><%= project.baseline_summary || '-' %></div>
+      </section>
+
+      <section class="panel">
+        <h2 class="section-title">Monitoring Plan</h2>
+        <div class="text-block"><%= project.monitoring_plan || '-' %></div>
+      </section>
+
+      <section class="panel">
+        <h2 class="section-title">Additionality</h2>
+        <div class="text-block"><%= project.additionality || '-' %></div>
+      </section>
+    </main>
+
+    <script>
+      const statusSelect = document.getElementById('status-select');
+      const statusSave = document.getElementById('status-save');
+      const statusResult = document.getElementById('status-result');
+
+      async function updateStatus() {
+        const status = statusSelect?.value;
+        if (!status) return;
+
+        statusResult.textContent = '저장 중...';
+
+        try {
+          const res = await fetch('/manage/status', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              project_id: <%= project.id %>,
+              status
+            })
+          });
+
+          if (!res.ok) throw new Error('failed');
+          statusResult.textContent = '저장 완료';
+          document.querySelector('.status').textContent = status;
+          document.querySelector('.status').className = `status ${status}`;
+        } catch (err) {
+          statusResult.textContent = '저장 실패. 다시 시도해주세요.';
+        }
+      }
+
+      statusSave?.addEventListener('click', updateStatus);
+    </script>
+  </body>
+</html>
